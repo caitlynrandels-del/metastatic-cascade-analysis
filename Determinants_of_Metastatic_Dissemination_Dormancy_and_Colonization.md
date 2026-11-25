@@ -1,0 +1,18 @@
+# Determinants of Metastatic Dissemination, Dormancy, and Colonization: An Analysis of Post-Dissemination Cascade Dynamics
+
+**Author:** Pip Window (prepared for Caitlyn Connor Randels)  
+**Date:** November 2026
+
+## ABSTRACT
+
+**Background.** Metastatic spread is highly inefficient: most disseminated cells perish, a small subset persists in a dormant state, and a very small fraction forms overt lesions. Identifying which specific biological stages of the post-dissemination cascade primarily shape the eventual disease burden—and whether suppressing overt lesions also eliminates the hidden dormant reservoir—remains a central challenge in metastatic oncology.
+
+**Methods.** We conducted an integrated quantitative analysis evaluating the post-dissemination cascade (shedding, circulation, tissue arrest, establishment, dormancy, reawakening, and overt colonization) over a 120-month horizon across 484 experimental conditions (454 unique parameter configurations) and five organotropism settings (prostate-like, ER+ breast-like, lung-like, melanoma-like, and colorectal-like). Methodologically, the findings were evaluated via a discrete-time stochastic computational framework across 1,210,000 simulated histories, using cluster bootstrapping over independent seed blocks (B=2,000) for uncertainty estimation, binomial logistic regression for switch-point determination, and independent-action ratios for pairwise parameter interactions.
+
+**Results.** Across default biological conditions, 21.7% of disease trajectories (95% CI 20.2–23.4%) developed an overt colony, 94.7% of colonies arose in the preferred organ, and a mean reservoir of 10.38 dormant cells (10.25–10.51) remained at month 120. The probability of full disease elimination (absence of both overt colonies and dormant cells) was overwhelmingly governed by the tissue establishment threshold: rising to 50% at a threshold of 0.799 (0.797–0.800) and 90% at 0.854 (0.851–0.857). Global organ permissiveness represented the second most potent lever, requiring a scaling of 0.219× (0.217–0.221) for 90% elimination. Bone-tropic prostate-like disease exhibited significantly higher resistance to clearance than lung-tropic configurations (90% elimination threshold of 0.872 vs. 0.842; global permissiveness requirement of 0.176× vs. 0.281–0.303×). Evaluating intervention timing demonstrated that the effectiveness of multi-parameter interventions halved when onset was delayed to month 57 (55.9–58.7). For single upstream interventions (shedding, initial establishment, or permissiveness), effectiveness halved within 15 to 17 months of delayed onset, whereas direct dormant-cell clearance retained efficacy until month 97. Pairwise interactions mostly adhered to independent action (74 of 98 within ±10%), with major exceptions occurring between global and preferred-organ permissiveness (ratio 0.21) and between establishment threshold and circulating clearance (1.38–1.42).
+
+**Conclusions.** Metastatic colonization and residual dormant reservoirs are governed primarily by tissue-level establishment in the target organ and local organ permissiveness. Crucially, preventing overt tumor outgrowth and clearing the dormant cell pool are biologically separable outcomes. Therapies acting upstream of dormancy lose the vast majority of their therapeutic potential if delayed beyond 1.5 years post-dissemination, whereas direct dormant-cell clearance offers an extended therapeutic window.
+
+---
+
+*(Full sections on methods, results tables for organotropism, switch points, combinations, onset timing, discussion of four primary principles, and limitations are available in the original document. This Markdown captures the core findings.)*
