@@ -1,46 +1,45 @@
 # Metastatic Cascade Analysis
 
-**Establishment-Stage Control and Onset Dependence in Metastatic Dissemination, Dormancy and Colonization**
+**Calibration of a Stochastic Cascade Model of Metastatic Dissemination, Dormancy and Colonization to Public Cohort Data**
 
-Refined analysis of a 1.21-million-run parameter sweep across five organotropism configurations.
+Stage-specific dose-response, interaction and onset-timing analysis. Independent research by Caitlyn Randels, November 2026.
 
 **Author:** Caitlyn Randels · November 2026  
 **Independent Researcher**
 
 ## Overview
 
-Metastatic spread is widely described as inefficient: most disseminated cells are lost, a minority persist in a dormant state, and few form overt lesions. This study uses an agent-based, discrete-time stochastic model of the post-dissemination cascade (shedding, circulation, arrest, establishment, dormancy, reawakening, overt colonization) run over a 120-month horizon.
+An agent-based, discrete-time stochastic cascade model (shedding, circulation, arrest, establishment, dormancy, reawakening, colonization; 120 monthly steps) was calibrated to published cohort and experimental data for five tumor types (prostate, ER+ breast, lung, melanoma, colorectal). Targets included 10-year or 5-year cumulative incidence of distant disease, bone-marrow disseminated-tumor-cell prevalence, circulation loss, and organ-involvement shares.
 
-The analysis covers 484 conditions (454 unique parameter settings) × 2,500 runs across five organotropism configurations (prostate-like, ER+ breast-like, lung-like, melanoma-like, colorectal-like) and eight perturbed parameters.
+Eight model parameters were perturbed singly and in combination across 484 conditions × 2,500 runs (1,210,000 runs total). The work contrasts a data-calibrated sparse-shedding regime (~2.55 cells per run) with an earlier hand-set parameterization (~240 cells) and a fixed-shedding sensitivity solution, highlighting parameter identifiability limits.
 
-**Key findings:**
-- Under default parameters, 21.7% of runs developed an overt colony (95% CI 20.2–23.4%), with 94.7% of colonies in the preferred organ.
-- Mean of 10.38 dormant cells remained at month 120.
-- The establishment threshold is the dominant lever: full elimination rises steeply, reaching 50% at 0.799 and 90% at 0.854.
-- Global organ permissiveness and dormant-cell clearance are also critical, but with different onset dependence.
-- Suppressing overt colonies and clearing the dormant pool are separable outcomes.
-- Upstream perturbations lose half their effect within ~15–17 months of delayed onset; direct dormant-cell clearance remains effective until ~month 97.
+**Key points from the calibrated analysis:**
+- Incidence targets reproduced within stated ranges; breast bone-marrow prevalence matched; ever-dormant fraction not reached (structural ceiling ~0.285).
+- In the calibrated regime, establishment-checkpoint threshold and upstream parameters (shedding, global organ permissiveness) produced the largest effects on residual-free probability.
+- Post-seeding parameters separate overt and dormant outcomes.
+- Pairwise interactions centered near independence; benefit of every perturbation decreased with later onset.
+- Cumulative-incidence data alone leave stage-specific decomposition unresolved.
 
-All 1,210,000 per-run records were reanalysed for integrity, with cluster bootstrap uncertainty (B=2,000) and exact reproduction of prior estimates.
+## Papers and Documents
 
-## Papers
-
-- **[Establishment-Stage Control and Onset Dependence](Establishment_Stage_Control_and_Onset_Dependence.md)** — Full refined analysis (Caitlyn Randels).
-- **[Determinants of Metastatic Dissemination, Dormancy, and Colonization](Determinants_of_Metastatic_Dissemination_Dormancy_and_Colonization.md)** — Polished summary prepared for Caitlyn Connor Randels (Pip Window).
+- **[Establishment-Stage Control and Onset Dependence](Establishment_Stage_Control_and_Onset_Dependence.md)** — Earlier refined analysis.
+- **[Determinants of Metastatic Dissemination, Dormancy, and Colonization](Determinants_of_Metastatic_Dissemination_Dormancy_and_Colonization.md)** — Polished summary.
+- **[Study Design Limitations Beyond Data Application](Study_Design_Limitations_Beyond_Data.md)** — Additional subsection covering structural simplifications, uncalibrated constants, experimental design constraints, and scope (added November 2026).
+- Full manuscript + peer-review synthesis + this limitations subsection is available as a combined PDF (contact author or see related Oroboro repositories for the latest version).
 
 ## Related Work
 
 This analysis applies and extends the Oroboro state-reduction and relational simulation framework to metastatic biology. See:
-- [Oroboro](https://github.com/caitlynrandels-del/Oroboro) (main framework, including consciousness-mapping and Metastasis_HeatTrace_CaseStudy)
-- [Oroboro Relay](https://github.com/caitlynrandels-del/oroboro-relay) (practical application and metastasis-sim)
+- [Oroboro](https://github.com/caitlynrandels-del/Oroboro) (main framework)
+- [Oroboro Relay](https://github.com/caitlynrandels-del/oroboro-relay) (practical application)
 
 ## Data and Code Availability
 
-Per-run records and reanalysis pipeline referenced in the papers. No external data were used; rates were calibrated to qualitative patterns.
+Calibrated parameter files, provenance tables, reference tables, per-condition summaries, and model source (SHA-256 available) are held by the author and available on request. MSK-MET data from cBioPortal under CC BY-NC-ND 4.0.
 
 ## Limitations
 
-Rates set by hand to qualitative patterns; parameters are abstract; bootstrap captures Monte Carlo error only; no secondary seeding, immune compartments, or spatial structure.
+See the dedicated [Study Design Limitations Beyond Data Application](Study_Design_Limitations_Beyond_Data.md) for constraints that remain even with perfect data, plus the manuscript’s own Limitations section for target-mapping and identifiability issues.
 
 ---
 
