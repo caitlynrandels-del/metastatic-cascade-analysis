@@ -1,8 +1,8 @@
 # Metastatic Cascade Analysis
 
-**Calibration of a Stochastic Cascade Model of Metastatic Dissemination, Dormancy and Colonization to Public Cohort Data**
+**Identifiability Limits of Stage-Specific Control in a Calibrated Stochastic Metastatic Cascade Model**
 
-Stage-specific dose-response, interaction and onset-timing analysis. Independent research by Caitlyn Randels, November 2026.
+Stage-specific dose-response, interaction and onset-timing analysis of a model calibrated to public cohort data. Independent research by Caitlyn Randels, November 2026.
 
 **Author:** Caitlyn Randels · November 2026  
 **Independent Researcher**
@@ -11,7 +11,7 @@ Stage-specific dose-response, interaction and onset-timing analysis. Independent
 
 An agent-based, discrete-time stochastic cascade model (shedding, circulation, arrest, establishment, dormancy, reawakening, colonization; 120 monthly steps) was calibrated to published cohort and experimental data for five tumor types (prostate, ER+ breast, lung, melanoma, colorectal). Targets included 10-year or 5-year cumulative incidence of distant disease, bone-marrow disseminated-tumor-cell prevalence, circulation loss, and organ-involvement shares.
 
-Eight model parameters were perturbed singly and in combination across 484 conditions × 2,500 runs (1,210,000 runs total). The work contrasts a data-calibrated sparse-shedding regime (~2.55 cells per run) with an earlier hand-set parameterization (~240 cells) and a fixed-shedding sensitivity solution, highlighting parameter identifiability limits.
+Eight model parameters were perturbed singly and in combination across 484 conditions × 2,500 runs (1,210,000 runs total). The work contrasts a data-calibrated sparse-shedding regime (~2.55 cells per run) with an earlier hand-set parameterization (~240 cells) and a fixed-shedding sensitivity solution, highlighting that cumulative-incidence data constrain overall outcomes but leave stage-specific rates unresolved.
 
 **Key points from the calibrated analysis:**
 - Incidence targets reproduced within stated ranges; breast bone-marrow prevalence matched; ever-dormant fraction not reached (structural ceiling ~0.285).
@@ -25,7 +25,7 @@ Eight model parameters were perturbed singly and in combination across 484 condi
 - **[Establishment-Stage Control and Onset Dependence](Establishment_Stage_Control_and_Onset_Dependence.md)** — Earlier refined analysis.
 - **[Determinants of Metastatic Dissemination, Dormancy, and Colonization](Determinants_of_Metastatic_Dissemination_Dormancy_and_Colonization.md)** — Polished summary.
 - **[Study Design Limitations Beyond Data Application](Study_Design_Limitations_Beyond_Data.md)** — Additional subsection covering structural simplifications, uncalibrated constants, experimental design constraints, and scope (added November 2026).
-- Full manuscript + peer-review synthesis + this limitations subsection is available as a combined PDF (contact author or see related Oroboro repositories for the latest version).
+- Full manuscript (original title: “Calibration of a stochastic cascade model…”) + peer-review synthesis + limitations subsection is available as a combined PDF (contact author or see related Oroboro repositories for the latest version).
 
 ## Related Work
 
