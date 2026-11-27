@@ -25,16 +25,29 @@ Key computational findings (internal to the model):
 - Sponge activation reduced overt colonization, increased the residual hidden pool, and delayed first overt lesion.
 - The compartment imposed an elimination ceiling overcome only by combined membrane gating and establishment-threshold elevation.
 
+## Papers
+
+PDF and Word copies of the successive write-ups are in [`papers/`](papers/):
+
+- v1: *Dissemination, Dormancy and Colonization* (in-silico study)
+- v2: refined parameter-sweep paper
+- v3: establishment-stage control and onset dependence
+- v4: calibrated cascade model (multi-database run, sponge and layers)
+- v5: sponge and layer effects at equal precision (v4 run)
+
+A short [v4 run summary](v4_Run_Summary.md) is also in the repository root.
+
 ## Related Documents
 
 - Operational update sequence protocol
 - Earlier establishment-stage and determinants analyses
-- Associated PDF manuscript
+- Associated PDF manuscript (see `papers/`)
 
 ## Related Work
 
-- [Oroboro](https://github.com/caitlynrandels-del/Oroboro)
+- [Oroboro](https://github.com/caitlynrandels-del/Oroboro) and [consciousness-mapping](https://github.com/caitlynrandels-del/Oroboro/tree/main/consciousness-mapping)
 - [Oroboro Relay](https://github.com/caitlynrandels-del/oroboro-relay)
+- [epilepsy-sim](https://github.com/caitlynrandels-del/epilepsy-sim) — the same relational architecture (state reduction, Levy-weighted transitions, sponge, delta reconciliation) adapted to epilepsy and seizure dynamics, including a candidate on-off gate mapping from the 2025 Balabandian et al. mouse psilocin study. Speculative modeling only; no clinical claims.
 
 ## Data Availability
 
