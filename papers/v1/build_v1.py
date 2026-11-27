@@ -1,0 +1,168 @@
+from docx import Document
+from docx.shared import Pt, Inches, RGBColor
+from docx.enum.text import WD_ALIGN_PARAGRAPH
+from docx.enum.table import WD_TABLE_ALIGNMENT
+
+d = Document()
+st = d.styles['Normal']; st.font.name = 'Calibri'; st.font.size = Pt(10.5)
+for s in d.sections:
+    s.left_margin = s.right_margin = Inches(1); s.top_margin = s.bottom_margin = Inches(0.9)
+
+def P(text, bold=False, italic=False, size=None, align=None, space=6):
+    p = d.add_paragraph(); r = p.add_run(text); r.bold = bold; r.italic = italic
+    if size: r.font.size = Pt(size)
+    if align: p.alignment = align
+    p.paragraph_format.space_after = Pt(space)
+    return p
+def RP(parts, space=6):
+    p = d.add_paragraph()
+    for t, b in parts:
+        r = p.add_run(t); r.bold = b
+    p.paragraph_format.space_after = Pt(space)
+    return p
+def H(text, lvl=1):
+    h = d.add_heading(text, level=lvl)
+    for r in h.runs: r.font.color.rgb = RGBColor(0x1f,0x3a,0x5f)
+def B(text):
+    p = d.add_paragraph(text, style='List Bullet'); p.paragraph_format.space_after = Pt(3)
+def T(header, rows, caption=None, widths=None):
+    if caption: P(caption, bold=True, size=9.5, space=3)
+    t = d.add_table(rows=1, cols=len(header)); t.style = 'Light Grid Accent 1'
+    t.alignment = WD_TABLE_ALIGNMENT.CENTER
+    for i, h in enumerate(header):
+        c = t.rows[0].cells[i]; c.text = ''; r = c.paragraphs[0].add_run(h); r.bold = True; r.font.size = Pt(8.5)
+    for row in rows:
+        cells = t.add_row().cells
+        for i, v in enumerate(row):
+            cells[i].text = ''; r = cells[i].paragraphs[0].add_run(str(v)); r.font.size = Pt(8.5)
+    d.add_paragraph().paragraph_format.space_after = Pt(2)
+def F(path, caption, w=6.5):
+    d.add_picture(path, width=Inches(w)); d.paragraphs[-1].alignment = WD_ALIGN_PARAGRAPH.CENTER
+    P(caption, italic=True, size=9, space=10)
+
+# ---------- Title ----------
+P('Dissemination, Dormancy and Organ Colonization in a Stochastic Agent-Based Model', bold=True, size=17, align=WD_ALIGN_PARAGRAPH.CENTER, space=2)
+P('A series of in-silico experiments across five tumour-type configurations', italic=True, size=12.5, align=WD_ALIGN_PARAGRAPH.CENTER, space=8)
+P('Written by Pip Window, for Caitlyn Connor Randels  ·  November 2026', size=10, align=WD_ALIGN_PARAGRAPH.CENTER, space=4)
+P('Status: computational modeling study. All results describe the behaviour of a simulated system, not living biology. Nothing in this report is a medical claim, a prediction about any person, or guidance of any kind.', italic=True, size=9, align=WD_ALIGN_PARAGRAPH.CENTER, space=12)
+
+# ---------- Abstract ----------
+H('Abstract')
+RP([('Background. ', True), ('The spread of cells from a primary tumour to distant organs is often described in the literature as highly inefficient: most cells that leave are lost, some persist in a dormant state, and few go on to form a lesion. Because these events are rare, slow and spread across organs, a simulated system is a convenient place to ask which steps of the cascade most strongly shape the final outcome. ', False)])
+RP([('Approach. ', True), ('I ran four connected sets of computational experiments: (1) an exploratory single-run model of detachment, dormancy and colonization; (2) a longer, 800-cell, 120-month model with parameters chosen to echo qualitative ranges from the literature; (3) a five-configuration model (prostate-, ER+ breast-, lung-, melanoma- and colorectal-like organ-preference profiles), including a reproduction, a 5,000-run robustness analysis and a ±20% sensitivity analysis; and (4) a large ensemble of 1,210,000 simulated 120-month histories across 484 parameter conditions, in which eight abstract model parameters were varied alone, in combination and at different onset times.', False)])
+RP([('Results. ', True), ('With default settings, the large ensemble cleared 94.5% of the roughly 240 cells released per simulated history, left a mean of 10.4 dormant cells at month 120 (at least one in every run), and produced an overt colony in 21.7% of runs (95% CI 20.1–23.4%), 94.7% of them in the configuration\'s preferred organ. Parameters acting after a cell had settled (dormancy stability, outgrowth barrier) suppressed overt colonies to under 1% of runs but left the dormant pool unchanged (about 10.6 cells). Only four single parameters, pushed far enough, produced runs with neither colonies nor dormant cells in at least 94% of cases: release rate ×0.01 (93.8%), global organ permissiveness ×0.2 (95.2%), dormant-cell removal ×100 (94.1%) and an establishment threshold of 0.875–0.90 (94.0–98.3%). The establishment threshold showed a sharp transition (0.6% of runs at 0.70 versus 86.3% at 0.85). Effects shrank steadily when perturbations began later (87.4% at month 1, 69.6% at month 36, 40.4% at month 60, ~0% at month 108). The five-configuration table from the earlier work was reproduced exactly, but each of its rows matched in no more than 0.9% of other random seeds.', False)])
+RP([('Conclusion. ', True), ('In this model, outcomes were governed mainly by what happened at the moment a cell tried to settle in an organ, and by how permissive the organs were, rather than by anything downstream of dormancy. Suppressing colonies and emptying the dormant pool behaved as two separate problems. These are properties of the model as built and calibrated; they are hypotheses for discussion, not findings about biology.', False)], space=10)
+
+# ---------- Background ----------
+H('1. Background')
+P('Metastatic spread is commonly described as a multi-step cascade: cells leave a primary tumour, travel through the circulation, arrest in a distant organ, and then either die, persist in a dormant state, or eventually grow into a detectable lesion. Several qualitative features of this cascade are widely discussed in the general literature: most circulating cells are lost; disseminated cells can remain dormant for long periods; and different tumour types tend to favour different organs (for example, bone for prostate and some breast tumours, liver for colorectal tumours, and lung for several others). I do not cite specific studies here; these patterns are used only as qualitative targets that the model should be able to reproduce, not as data the model was fitted to.')
+P('The work began from a conceptual case study, "Metastasis as Relational Heat-Trace Migration", which framed the process as a set of independent cells whose detach and attach events are discrete, weighted transitions, observed through a continuous map of activity. That case study contained no data. The four experimental sets below turned the idea into runnable models and then asked progressively sharper questions:')
+B('Can a simple model produce clearance, dormancy and rare colonization at all? (Studies 1 and 2)')
+B('Do different organ-preference profiles produce the expected organ pattern, and how stable is any single run? (Study 3)')
+B('Which steps of the cascade, when changed, most reduce both overt colonies and the dormant pool, and does timing matter? (Study 4)')
+
+# ---------- Methods ----------
+H('2. Methods (brief)')
+P('All four studies use discrete-time, agent-based stochastic simulation with monthly steps (Study 1 uses 200 abstract steps). Each simulated cell carries its own state: attached or circulating, the organ it arrested in, a dormancy depth, and fitness-related traits. At each step, cells may be released, removed in circulation, arrest in an organ (weighted by that organ\'s permissiveness for the configuration), pass or fail an establishment step, enter or deepen dormancy, attempt to exit dormancy, and either form an overt colony or fail and return to dormancy. A cumulative event-weight tally (clearance +1, detachment +7, failed colonization +2, successful colonization +14, and, in later code, exit attempt +4) was kept as a bookkeeping index of activity. In Study 4, cells could be released continuously over 120 months (about 240 per history), and admission at arrest or reawakening passed through a scored establishment step: a weighted score of four features (0.30, 0.25, 0.25, 0.20) compared with a threshold of 0.65 by default, which became stricter (up to 0.85) when many cells were active at once. Five organ-preference profiles were used throughout Studies 3 and 4 (Table 1).')
+P('Study 4 varied eight abstract parameters: release rate, circulating removal, removal of dormant cells, dormancy stability, global organ permissiveness, preferred-organ permissiveness, the establishment threshold, and an outgrowth barrier. Every condition was run with 500 seeds × 5 configurations = 2,500 runs, reusing the same random draws across conditions so differences reflect the parameter change. Targets were fixed before combinations were examined: overt colonies in ≤1% of runs, any dormant cell left in ≤10% of runs, and "full elimination" (a run ending at month 120 with no overt colony and no dormant cell; cells still circulating in the last months were not counted). Internal consistency checks ran in every condition: cell-count conservation, agreement of the event-weight tally with event counts, agreement between three independent records of each colony, and agreement between whole-system runs and runs split into four parts (19,360 comparisons, 0 mismatches). These checks confirm the bookkeeping is consistent; they do not validate the biology.')
+T(['Configuration', 'Seed', 'Organ permissiveness (preferred first)'], [
+  ['Prostate-like', '17', 'bone 0.85, lymph 0.30, lung 0.25, liver 0.18'],
+  ['ER+ breast-like', '42', 'bone 0.70, lung 0.40, liver 0.35, brain 0.20'],
+  ['Lung-like', '99', 'lung 0.60, brain 0.50, bone 0.45, liver 0.40'],
+  ['Melanoma-like', '123', 'lung 0.55, skin 0.50, brain 0.45, liver 0.40'],
+  ['Colorectal-like', '77', 'liver 0.75, lung 0.40, peritoneum 0.35, bone 0.25']],
+  caption='Table 1. Organ-preference profiles used in Studies 3 and 4. Values are model settings chosen to give the expected preferred organ, not measurements.')
+
+# ---------- Results ----------
+H('3. Results')
+H('3.1 Study 1: exploratory model', 2)
+P('A single run of the exploratory model (cells with random energy, plasticity, immune-evasion and organ-fit traits; 200 steps) ended with 17 cells remaining, 8 detached, 3 in deep dormancy, and an event-weight tally of 187 across 59 events. Re-running the script on the box gave the same values. Dormancy entry was closely tied to detachment events, and whether a cell colonized depended on its local fit rather than on any fixed "genetic" property: cells with identical starting rules could succeed or fail. This was a proof of concept with one run, so it supports no quantitative statement.')
+H('3.2 Study 2: longer model with literature-shaped parameters', 2)
+P('The second model followed 800 cells for 120 months, with high circulating loss and a strict colonization threshold chosen to echo qualitative ranges described in the literature (frequent dissemination, rare progression, multi-year dormancy, organ-dependent permissiveness). The run ended with 790 cells remaining at the primary site, 1 detached cell in deep dormancy, 1 overt colony (bone, month 36), and an event-weight tally of 67 over 28 events; a re-run reproduced these numbers. The qualitative picture (most released cells lost, a single colony, a persisting dormant cell) matched the target pattern, but again this is a single run.')
+H('3.3 Study 3: five organ-preference configurations', 2)
+P('An earlier version of the multi-configuration experiment had a design flaw: when I compared those four runs, their outputs were identical apart from the configuration labels, meaning the "different tumour types" had not actually been simulated differently. The corrected experiment gave each configuration its own random seed and its own organ-permissiveness profile (Table 1), with 400 cells over 120 months. Its results are in Table 2.')
+T(['Configuration', 'Preferred organ', 'Overt colonies', 'In preferred organ', 'Deep-dormant cells', 'Event-weight tally', 'Events (clear / detach / fail / colonize)'], [
+  ['Prostate-like', 'bone', '1', '1', '0', '36', '8 / 2 / 0 / 1'],
+  ['ER+ breast-like', 'bone', '1', '1', '2', '71', '10 / 5 / 6 / 1'],
+  ['Lung-like', 'lung', '0', '0', '2', '30', '10 / 2 / 3 / 0'],
+  ['Melanoma-like', 'lung', '0', '0', '2', '39', '6 / 3 / 6 / 0'],
+  ['Colorectal-like', 'liver', '1', '1', '2', '70', '14 / 4 / 7 / 1']],
+  caption='Table 2. Corrected five-configuration runs (one seed each; 400 cells, 120 months).')
+P('In every row, cleared events outnumbered detachments; all three colonies formed in the preferred organ; and four of five runs kept deep-dormant cells. An independent re-implementation reproduced all 25 numbers exactly, and every event-weight total equals the weighted sum of its logged events (e.g., ER+ breast-like: 10 + 35 + 12 + 14 = 71).')
+P('I then asked how typical these rows were. Across 1,000 further seeds per configuration (5,000 runs), an exact row match occurred in only 0.1–0.9% of seeds. The qualitative pattern was much more stable (Table 3): pooled clearance of dissemination events was 72.2%, colonization occurred in 34.5% of runs, 98.0% of colonies were in the preferred organ, and 85.9% of runs kept at least one deep-dormant cell. Grouping runs into 1,000 five-configuration sets, the full qualitative pattern of Table 2 (clearance, preferred-organ-only colonies, dormancy in exactly four of five) appeared in 26.6% of sets.')
+T(['Configuration', 'Exact row match', 'Any colonization', 'Colonies only in preferred organ', '≥1 deep-dormant cell'], [
+  ['Prostate-like', '0.5%', '47.7%', '100%', '79.8%'],
+  ['ER+ breast-like', '0.1%', '36.2%', '100%', '87.4%'],
+  ['Lung-like', '0.5%', '27.0%', '98.0%', '87.3%'],
+  ['Melanoma-like', '0.9%', '20.8%', '97.7%', '89.4%'],
+  ['Colorectal-like', '0.4%', '40.6%', '100%', '85.4%']],
+  caption='Table 3. Robustness of the Study 3 pattern over 1,000 seeds per configuration.')
+P('A ±20% sensitivity analysis (400 five-configuration sets per setting) showed that circulating clearance was the most influential setting: at ×0.8, colonization rose to 0.39 of runs and the full pattern fell to 0.04 of sets; at ×1.2, colonization fell to 0.23 and dormancy-bearing runs to 0.63. Raising clearance further (0.80 / 0.90 / 0.95) reduced dormancy-bearing runs to 0.76 / 0.52 / 0.30. Colonization-attempt rate, acceptance probability and the preferred-organ threshold moved colonization between 0.27 and 0.41 with little effect on dormancy; cell number and dormancy-exit rate had negligible effect.')
+F('fig_testbed.png', 'Figure 1. Study 3. (A) Event-weight totals decomposed by event type; (B) simulated counts versus the reported table; (C) robustness over 1,000 seeds per configuration; (D) pattern robustness over 400 five-configuration sets, original settings versus an optional higher-clearance variant (not used for Table 2).')
+
+H('3.4 Study 4: large-ensemble perturbation experiments', 2)
+P('Default behaviour. Across 2,500 default runs, about 240 cells were released per history and 94.5% were cleared. A mean of 10.4 dormant cells remained at month 120 (about 4.3% of those released; at least one in 100% of runs), overt colonies occurred at 0.255 per run and in 21.7% of runs (95% CI 20.1–23.4%), 94.7% of colonies were in the preferred organ, and about 2.2 cells were still circulating at the end. Clearance, a persistent dormant pool and organ preference all emerged from the model; none was imposed as an outcome. The configurations differed (Table 4): the prostate-like profile, with the most permissive preferred organ (0.85), had the largest dormant pool and the most colonies.')
+T(['Configuration', 'Runs with an overt colony (95% CI)', 'Mean dormant cells', 'Share of colonies in preferred organ'], [
+  ['Prostate-like', '39.6% (35.4–44.0)', '12.06', '100%'],
+  ['ER+ breast-like', '21.0% (17.7–24.8)', '10.02', '100%'],
+  ['Lung-like', '13.6% (10.9–16.9)', '9.76', '75%'],
+  ['Melanoma-like', '10.0% (7.7–12.9)', '9.41', '70%'],
+  ['Colorectal-like', '24.4% (20.8–28.4)', '10.65', '100%']],
+  caption='Table 4. Default (unperturbed) behaviour by configuration, 500 runs each.')
+F('fig01_baseline.png', 'Figure 2. Default behaviour by configuration: (A) fraction of released cells cleared by month 120; (B) mean dormant cells remaining; (C) overt colonies per run by organ.')
+
+P('Single parameters. Table 5 summarises the dose–response of each parameter alone. Two patterns stood out. First, parameters that act after a cell has settled (dormancy stability, outgrowth barrier) drove overt colonies down to 0–0.6% of runs while leaving the dormant pool at about 10.6 cells, so full elimination stayed at 0%. Second, only four parameters could reach the "both near zero" target alone.')
+T(['Parameter (default)', 'Setting', 'Mean dormant cells', 'Runs with overt colony', 'Full elimination'], [
+  ['Default', '—', '10.38', '21.7%', '0%'],
+  ['Release rate (×1)', '×0.5 / ×0.1 / ×0.01', '4.77 / 0.75 / 0.07', '9.4% / 0.8% / 0%', '0.8% / 52% / 93.8%'],
+  ['Circulating removal (×1)', '×1.3 / ×1.65 (cap)', '6.80 / 3.85', '12.9% / 6.3%', '0.1% / 2.3%'],
+  ['Dormant-cell removal (×1)', '×5 / ×20 / ×100', '3.59 / 0.83 / 0.06', '9.4% / 2.9% / 0.2%', '2.2% / 42% / 94.1%'],
+  ['Dormancy stability (0)', '0.8 / 1.0', '10.6 / 10.6', '2.6% / 0%', '0%'],
+  ['Global organ permissiveness (×1)', '×0.6 / ×0.4 / ×0.2', '5.16 / 2.28 / 0.05', '4.3% / 0.2% / 0%', '0.4% / 11.8% / 95.2%'],
+  ['Preferred-organ permissiveness (×1)', '×0.5 / ×0.3', '7.02 / 6.24', '2.4% / 0.9%', '0.1% / 0.4%'],
+  ['Establishment threshold (0.65)', '0.70 / 0.85 / 0.90', '4.38 / 0.14 / 0.02', '7.3% / 0% / 0%', '0.6% / 86.3% / 98.3%'],
+  ['Outgrowth barrier (+0)', '+0.3 / +0.5', '~10.5 / 10.58', '7.9% / 0.6%', '0%']],
+  caption='Table 5. Single-parameter results, 2,500 runs per setting (pooled over configurations).')
+P('Circulating removal helped little on its own because it was already high in the default model and hit a 99%-per-month cap near ×1.65; even there only 2.3% of runs fully eliminated. Lowering only the preferred organ\'s permissiveness reduced colonies (to 0.9% of runs at ×0.3) but mostly redirected them to secondary organs and left about 6.2 dormant cells per run.')
+F('fig02_dose_response.png', 'Figure 3. Dose–response for each of the eight parameters: overt colonies and dormant pool relative to default, and the full-elimination fraction.')
+P('Tipping points and configuration differences. The establishment threshold behaved like a switch: full elimination rose from 0.6% (0.70) to 4.0% (0.725), 13.6% (0.75), 31.3% (0.775), 86.3% (0.85), 94.0% (0.875) and 98.3% (0.90). Global permissiveness tipped between ×0.45 and ×0.2 (72.8% at ×0.25, 95.2% at ×0.2, 100% at ×0.15). The prostate-like configuration was consistently the hardest to clear: at threshold 0.85 it reached 76.8% versus 91.8% for the lung-like profile, and at global permissiveness ×0.2 it reached 76.2% versus 100% for lung- and melanoma-like profiles.')
+F('fig03_tumor_type_thresholds.png', 'Figure 4. Full-elimination fraction by configuration along each parameter sweep.')
+P('Diminishing returns. Release rate and dormant-cell removal improved outcomes steadily, but each step gave less: dormant-cell removal ×5 reduced the dormant pool by about 65%, ×20 by about 92%, and ×50 by about 97%.')
+F('fig06_diminishing_returns.png', 'Figure 5. Percentage reduction in the dormant pool (A) and in overt colonies (B) along each sweep.')
+P('Combinations. Of 112 two-parameter settings, 9 met both targets, and all 9 included the establishment threshold at 0.85 (best: threshold 0.85 with dormant-cell removal ×20, 98.9%; threshold 0.85 with global permissiveness ×0.4, 98.9%). The best pair without the threshold reached 84.5% (release ×0.25 with dormant-cell removal ×20). Of 112 three-parameter settings, 26 met both targets; six did so without the threshold, all at strong settings (e.g., dormant-cell removal ×20 + global permissiveness ×0.4 + preferred-organ permissiveness ×0.3, 96.9%). Sets of four to six parameters, tested only at moderate strength, never met the target (best four-parameter set 85.6%; five without the threshold 74.5%). All parameters together reached 94.3% at moderate settings and 100% at strong settings (99.7% without the threshold). In short, many moderate changes did not substitute for a few strong ones.')
+P('Interactions, measured against the expectation if pairs acted independently, were mostly close to multiplicative (median ratio 1.0 on the dormant pool). Two pairings did better than expected: global plus preferred-organ permissiveness (0.2×, because the first removes the organs the second would shift cells toward) and threshold plus global permissiveness (0.37–0.54×). One did worse: threshold plus circulating removal (1.4×), plausibly because both act through the same removal route.')
+F('fig05_combinations.png', 'Figure 6. (A) Best full-elimination fraction for every two-parameter pair; (B) best outcome by number of parameters changed. Sets of four to six were run only at moderate strength, so bar heights are not directly comparable across sizes.')
+P('Timing. When a moderate six-parameter bundle was switched on later in the 120-month horizon, full elimination fell from 87.4% (month 1) to 84.4% (month 12), 69.6% (month 36), 40.4% (month 60), 9.2% (month 84) and 0.04% (month 108). For the threshold at 0.80 alone, the values were 54%, 32%, 8% and 1% for onsets at months 1, 12, 36 and 60. By contrast, the effect of dormant-cell removal ×20 on the dormant pool barely depended on onset (0.83 cells for any onset up to month 84), although colonies rose with later onset (0.030 to 0.146 per run). The general rule in this model: parameters acting before cells settle work best early, because cells that have already settled remain.')
+F('fig04_timing.png', 'Figure 7. Full-elimination fraction (A) and overt colonies per run (B) versus the month a perturbation began.')
+P('Partition test. When one quarter of the simulated population was cut off from the rest for 41 months, its results drifted from the whole-system result in 74–85% of runs per configuration (100 runs each); after reconnection and replay, all 500 runs agreed again. This confirms the model can be computed in parts without changing its answers, a property of the simulation rather than of biology.')
+
+# ---------- Discussion ----------
+H('4. Discussion')
+P('Across all four studies, the model reproduced the qualitative picture used as its target: heavy loss of released cells, a small and persistent dormant pool, and rare colonies concentrated in each configuration\'s preferred organ. The main new information comes from Study 4, where large ensembles allowed rare outcomes to be measured with useful precision.')
+P('Three observations seem most worth discussing. First, in this model, stopping colonies and emptying the dormant pool are different problems. Parameters acting after settlement suppressed colonies almost completely without touching the dormant pool, while full elimination required acting at or before settlement, or removing dormant cells directly and heavily. Second, the steepest response belonged to the establishment step, the point at which an arriving cell is admitted or rejected. Its switch-like behaviour between 0.70 and 0.85 follows from how that step was built (a fixed weighted score compared with a threshold), so it is better read as a statement about thresholded admission in general than as evidence about any real mechanism. Third, onset mattered: in a system where settled cells persist, anything acting upstream loses most of its effect once the dormant pool has formed.')
+P('Study 3 adds a methodological lesson. A single seeded run can match a target table perfectly and still be unrepresentative: each row of Table 2 recurred in under 1% of other seeds, while the qualitative pattern recurred in roughly a quarter to nine-tenths of runs depending on the measure. Results from small models should therefore be reported as distributions, not single draws. The earlier label-only duplication shows why every configuration needs its own independent inputs and why outputs should be checked against each other before interpretation.')
+P('Finally, organ preference in this model is partly built in. Permissiveness weights both where a cell arrests and how well it fits, and the preferred organ also has an easier threshold (0.30 versus 0.42). The near-total concentration of colonies in preferred organs is therefore partly structural, and should not be read as the model discovering tropism.')
+
+# ---------- Limitations ----------
+H('5. Limitations')
+B('This is a simulation, not biology. All rates were set by hand to produce the target pattern of high clearance, a small dormant pool and rare preferred-organ colonies. None is a measured value, and effect sizes would change under a different calibration.')
+B('The eight parameters are abstract dials in a model. They do not correspond to any specific biological process, product or procedure, and the results say nothing about what would happen in a person.')
+B('The establishment threshold is strong because of how the admission step was designed. Its dominance is a modeling choice.')
+B('Reconciliation: in the original interactive sketch and in the early scripts, the "reconcile" step was cosmetic (it relabelled the state as coherent without computing anything), and the early five-configuration code had no reconciliation step at all. A real bookkeeping check was added later; it confirms internal consistency only.')
+B('The exit-attempt weight of +4 appears in the code but is not documented in the standardized weight list. In 22.1% of random-seed runs in Study 3, at least one exit attempt occurred, so those tallies do not follow the four-weight formula. Event-weight totals from Study 4 (about 1,913 per run, dominated by +7 per released cell) cannot be compared with those of Study 3 (30–71).')
+B('The first multi-configuration runs were identical except for their labels and are excluded from all results above. I have the finding from an earlier comparison but not the original files, so their exact numbers are not reproduced here.')
+B('Studies 1 and 2 are single runs. Study 3 "clearance" is about 72% of dissemination events, set directly by its clearance probability; by population, about 98% of its 400 cells never left the primary site. In Study 3, the prostate-like dormant count of 0 depends on the threshold: one cell sat exactly at the 0.5 cutoff.')
+B('Two variables in the Study 3 code (an immune-evasion trait and a per-cell weight) are initialized but never used.')
+B('Sets of four to six parameters in Study 4 were tested only at moderate strength, so the comparison across set sizes is not like-for-like. Cells still circulating at month 120 (about 2.2 per default run) were not counted against full elimination.')
+B('Not modeled: secondary seeding from established colonies, distinct immune compartments, organ-specific growth dynamics, or any real imaging or patient data.')
+
+# ---------- Conclusion ----------
+H('6. Conclusion')
+P('Over four studies and more than 1.2 million simulated histories, a simple agent-based model of dissemination, dormancy and colonization reproduced the qualitative pattern it was built to show, and its large-ensemble experiments gave a consistent internal picture. Outcomes depended most on the establishment step and on organ permissiveness. Suppressing colonies and clearing the dormant pool behaved as separate problems. Effects acting upstream faded with later onset. A few strong parameter changes outperformed many moderate ones. These are statements about this model under its chosen calibration. They are offered as hypotheses for discussion and further modeling, with no clinical meaning.')
+
+H('Data and materials')
+P('Run outputs for Study 4 (484 condition summaries, per-run data for 1,210,000 runs, analysis tables and figures) are in /workspace/oroboro-prevention-sim/ (data/, charts/, params.json). Study 3 reproduction, robustness and sensitivity outputs are in /workspace/oroboro-metastasis-sim/. Studies 1 and 2 and the original five-configuration code are in the Oroboro repository (consciousness-mapping/). A binary-text export of the simulation summaries is in /workspace/sim-export/.', size=9.5)
+P('No external references are cited. Background statements are general and are not drawn from specific studies.', italic=True, size=9)
+
+d.save('Dissemination_Dormancy_Colonization_InSilico_Study.docx')
+print('ok')
