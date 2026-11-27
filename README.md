@@ -6,6 +6,9 @@ Independent research by Caitlyn Randels, November 2026.
 
 **Speculative modeling only. No clinical claims.**
 
+## Status (27 Nov 2026)
+`metastatic_cascade_model.py` is **superseded**: it has the sponge compartment but no Oroboro loop. That means no polarity mesh, consensus, Levy feedback, deterministic reconciliation or PrinciplesGate. It is kept for history. The native model, with every Oroboro component in one loop, is [Oroboro/research/metastasis-native](https://github.com/caitlynrandels-del/Oroboro/tree/main/research/metastasis-native). The v1 and v2 papers below predate that pipeline.
+
 ## Model Code
 
 - [`metastatic_cascade_model.py`](metastatic_cascade_model.py) — Discrete-time stochastic agent-based implementation including the absorbent intermediary (“sponge”) compartment.
@@ -35,7 +38,7 @@ Successive write-ups of this work:
 - v4: calibrated cascade model (multi-database run, sponge and layers)
 - v5: sponge and layer effects at equal precision (v4 run)
 
-The original PDF and Word files could not be stored here as binaries through the connected GitHub interface; they remain on the project computer and were delivered in chat. A short [v4 run summary](v4_Run_Summary.md) is in the repository root, and an index is in [`papers/README.md`](papers/README.md).
+Page-image views are now in the repo: [v1](papers/v1/view.html) and [v2](papers/v2/view.html), with SVG pages, plain-text extractions and build scripts. The PDF and Word binaries for v1–v5 remain on the project computer, because the connected GitHub interface stores text only. v3–v5 are not yet published here. A short [v4 run summary](v4_Run_Summary.md) is in the repository root, and an index is in [`papers/README.md`](papers/README.md).
 
 ## Related Documents
 

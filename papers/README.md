@@ -12,4 +12,10 @@ Successive Oroboro metastatic-cascade write-ups (v1–v5). The original PDF and 
 | v4 | Calibrated Cascade Model of Metastatic Dissemination, Dormancy and Colonization |
 | v5 | Sponge and Layer Effects in a Calibrated Metastatic Cascade Model at Equal Precision |
 
+**Published as page views (27 Nov 2026):**
+- v1: [`v1/view.html`](v1/view.html) (`v1/pages/*.svg`), text `v1/Dissemination_Dormancy_Colonization_InSilico_Study.txt`, builder `v1/build_v1.py`
+- v2: [`v2/view.html`](v2/view.html) (`v2/pages/*.svg`), text `v2/InSilico_Metastasis_Parameter_Sweep_Refined.txt`, builder `v2/build_v2.py`, `v2/REFINEMENT_REPORT.md`
+
+These studies predate the native, conjunctive Oroboro pipeline ([Oroboro/research/metastasis-native](https://github.com/caitlynrandels-del/Oroboro/tree/main/research/metastasis-native)). Read them as pre-integration results.
+
 Full v3/v4 simulation code and results are also on the project computer (`oroboro-multidb-sim-v3` and `oroboro-multidb-sim-v4`) and have not been published as new GitHub repositories yet, for the same reason (the connected interface cannot take a full git push of binary results). Related architecture adaptation: [epilepsy-sim](https://github.com/caitlynrandels-del/epilepsy-sim).
