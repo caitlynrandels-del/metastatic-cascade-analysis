@@ -1,0 +1,135 @@
+from docx import Document
+from docx.shared import Pt, Inches, RGBColor
+from docx.enum.text import WD_ALIGN_PARAGRAPH
+from docx.enum.table import WD_TABLE_ALIGNMENT
+d = Document()
+st = d.styles['Normal']; st.font.name = 'Calibri'; st.font.size = Pt(10.5)
+for s in d.sections:
+    s.left_margin = s.right_margin = Inches(1); s.top_margin = s.bottom_margin = Inches(0.9)
+
+def P(text, bold=False, italic=False, size=None, align=None, space=6):
+    p = d.add_paragraph(); r = p.add_run(text); r.bold = bold; r.italic = italic
+    if size: r.font.size = Pt(size)
+    if align: p.alignment = align
+    p.paragraph_format.space_after = Pt(space)
+    return p
+def RP(parts, space=6):
+    p = d.add_paragraph()
+    for t, b in parts:
+        r = p.add_run(t); r.bold = b
+    p.paragraph_format.space_after = Pt(space)
+    return p
+def H(text, lvl=1):
+    h = d.add_heading(text, level=lvl)
+    for r in h.runs: r.font.color.rgb = RGBColor(0x1f,0x3a,0x5f)
+def B(text):
+    p = d.add_paragraph(text, style='List Bullet'); p.paragraph_format.space_after = Pt(3)
+def T(header, rows, caption=None, widths=None):
+    if caption: P(caption, bold=True, size=9.5, space=3)
+    t = d.add_table(rows=1, cols=len(header)); t.style = 'Light Grid Accent 1'
+    t.alignment = WD_TABLE_ALIGNMENT.CENTER
+    for i, h in enumerate(header):
+        c = t.rows[0].cells[i]; c.text = ''; r = c.paragraphs[0].add_run(h); r.bold = True; r.font.size = Pt(8.5)
+    for row in rows:
+        cells = t.add_row().cells
+        for i, v in enumerate(row):
+            cells[i].text = ''; r = cells[i].paragraphs[0].add_run(str(v)); r.font.size = Pt(8.5)
+    d.add_paragraph().paragraph_format.space_after = Pt(2)
+def F(path, caption, w=6.5):
+    d.add_picture(path, width=Inches(w)); d.paragraphs[-1].alignment = WD_ALIGN_PARAGRAPH.CENTER
+    P(caption, italic=True, size=9, space=10)
+
+
+C = WD_ALIGN_PARAGRAPH.CENTER
+P('Establishment-Stage Control and Onset Dependence in an In-Silico Model of Metastatic Dissemination, Dormancy and Colonization', bold=True, size=16, align=C, space=2)
+P('Refined analysis of a 1.21-million-run parameter sweep across five organotropism configurations', italic=True, size=12, align=C, space=8)
+P('Pip Window, prepared for Caitlyn Connor Randels  ·  November 2026', size=10, align=C, space=4)
+P('This is a computational modeling study. Every result describes the behaviour of a simulated system under assumed parameters. It makes no claim about human biology, diagnosis or care.', italic=True, size=9, align=C, space=12)
+
+H('Abstract')
+RP([('Background. ', True), ('Metastatic spread is widely described as inefficient: most disseminated cells are lost, a minority persist in a dormant state, and few form overt lesions. Rare, slow, spatially distributed events like these are hard to dissect experimentally. Large stochastic simulations offer a complementary way to ask which stages of the cascade most strongly shape its outcome in a given model.', False)])
+RP([('Methods. ', True), ('An agent-based, discrete-time stochastic model of the post-dissemination cascade (shedding, circulation, arrest, establishment, dormancy, reawakening, overt colonization) was run over a 120-month horizon. The study covered 484 conditions (454 unique parameter settings) × 2,500 runs, five organotropism configurations and eight perturbed parameters. Only the stored per-run records (n = 1,210,000) were reanalysed. Condition estimates were recomputed in ten independent seed blocks and recombined, and the recombined values were checked against whole-condition computation. Uncertainty was quantified by cluster bootstrap over seeds (B = 2,000). Switch points were estimated by logistic regression, onset dependence by interpolated half-times, and pairwise interactions as observed/independent-action ratios.', False)])
+RP([('Results. ', True), ('All 484 condition estimates were reproduced exactly from the raw records, and between-block heterogeneity in full elimination did not exceed chance (12 of 422 testable conditions at α = 0.05; 21 expected). Under default parameters, 21.7% of runs (bootstrap 95% CI 20.2–23.4%) developed an overt colony, 94.7% of colonies arose in the preferred organ, and a mean of 10.38 dormant cells (10.25–10.51) remained at month 120. The probability of full elimination (no colony and no dormant cell) rose steeply with the establishment threshold: 50% at 0.799 (0.797–0.800) and 90% at 0.854 (0.851–0.857). The 90% point for global organ permissiveness was a scaling of ×0.219 (0.217–0.221). The bone-tropic prostate-like configuration required significantly stricter settings than the lung-tropic configurations (90% threshold 0.872 versus 0.842; permissiveness ×0.176 versus ×0.281–0.303). The effect of a moderate multi-parameter perturbation halved when its onset was delayed to month 57 (55.9–58.7). For single upstream perturbations this happened by month 15–17, whereas dormant-cell clearance stayed effective until month 97. Most pairwise interactions were near independent action (74 of 98 within ±10%), with a few large exceptions: global with preferred-organ permissiveness (ratio 0.21) and establishment threshold with circulating clearance (1.38–1.42).', False)])
+RP([('Conclusions. ', True), ('In this model, the outcome is controlled mainly at establishment in the distant organ and by organ permissiveness. Suppressing overt colonies and clearing the dormant pool are separable outcomes, and perturbations acting upstream of dormancy lose effect within roughly 1.5 years of delayed onset. The estimates are precise with respect to Monte Carlo error but depend on the model\'s assumed structure and calibration.', False)], space=10)
+
+H('1. Introduction')
+P('The metastatic cascade is usually decomposed into dissemination from the primary tumour, survival in the circulation, arrest and establishment in a distant organ, a dormant phase of variable length, and eventual outgrowth. Three qualitative features recur in descriptions of the process: most circulating cells are lost, disseminated cells can persist without proliferating for long periods, and tumour types differ in the organs they colonize (organotropism). Which of these stages dominates the eventual burden of overt disease, and whether suppressing overt lesions also removes the dormant reservoir, are questions that suit large simulated ensembles, where rare events can be counted precisely and every parameter can be set at will.')
+P('An earlier descriptive summary of this simulation study reported point estimates for each condition. Here I reanalyse only the stored per-run outputs to (i) verify each estimate independently, (ii) attach uncertainty to every headline quantity, (iii) estimate switch points rather than reporting the first tested value that crossed a target, (iv) summarise onset dependence with a single interpretable quantity, and (v) test whether pairwise interactions depart from independent action. No new simulations were run, and no external data were used.')
+
+H('2. Methods')
+H('2.1 Simulation model (summary)', 2)
+P('Each run simulates one host for 120 monthly steps. Cells are shed continuously from a primary site (about 240 per run at default settings) and may be cleared in the circulation, arrest in an organ chosen in proportion to configuration-specific permissiveness, and then pass, be held at, or fail an establishment step. The establishment step is a weighted four-feature score compared with a threshold (default 0.65), which rises toward 0.85 when the number of active cells is high. Established cells enter dormancy, may be cleared while dormant, attempt to exit dormancy at a low rate (calibrated so that overt colonization occurs in roughly 10–40% of runs per configuration), and either form an overt colony or fail and return to dormancy. Five organotropism configurations were used: prostate-like and ER+ breast-like (bone preferred, permissiveness 0.85 and 0.70), lung-like and melanoma-like (lung preferred, 0.60 and 0.55), and colorectal-like (liver preferred, 0.75). All rates are model parameters calibrated to reproduce the qualitative pattern described above; none is a measured quantity.')
+H('2.2 Parameter sweep', 2)
+P('Eight parameters were perturbed: shedding rate, circulating clearance, dormant-cell clearance, dormancy maintenance, global organ permissiveness, preferred-organ permissiveness, the establishment threshold, and an outgrowth barrier added to the colonization fitness threshold. The design comprised single-parameter dose–response grids (56 conditions), refined grids near apparent transitions (48), onset-time series with perturbations starting at month 1, 6, 12, 24, 36, 60, 84 or 108 (57), all pairs (113), all triples (113), and higher-order sets (96). Every condition used 500 seeds for each of the five configurations (2,500 runs), and the same seed series were reused across conditions, so comparisons between conditions are paired. Outcomes per run were overt colonies (and their organ), dormant cells alive at month 120, and full elimination, defined as no overt colony and no dormant cell at month 120. Cells still in transit during the final months were not counted.')
+H('2.3 Reanalysis of per-run records', 2)
+P('All 1,210,000 per-run records were reanalysed. For each run, I recomputed the event-weight ledger from its event counts and checked cell-number conservation (shed = cleared + failed seeding + circulating + dormant + overt) and agreement among three colony records. Each run was then reduced to its outcome variables. Within each condition, runs were partitioned into ten blocks by seed index (k mod 10; 250 runs each, balanced across configurations). Sufficient statistics were computed independently per block and recombined by summation, and the recombined estimates were compared with direct whole-condition computation and with the earlier summaries. This replaces a placeholder in the original aggregation tooling, the Oroboro relay, whose reconciliation step drew a random "delta" rather than computing one; here the delta is the actual numerical difference. Agreement among blocks was tested with a χ² homogeneity statistic (df = 9).')
+P('Confidence intervals come from a cluster bootstrap that resamples seed index k with replacement (B = 2,000; fixed generator seed), keeping each seed\'s five configurations together and applying the same resample across conditions. Switch points were estimated by binomial logistic regression of full elimination on the parameter value (log₁₀ scale for multiplicative parameters, excluding a zero value), with x₅₀ and x₉₀ defined as the values giving predicted probabilities of 0.5 and 0.9; linear interpolation of the observed curve is reported alongside. For onset series, the half-time is the onset month at which full elimination falls to half its month-1 value (linear interpolation). For each two-parameter condition, the interaction ratio is the observed mean dormant pool divided by the independent-action expectation, D_A·D_B/D_0, where D_A, D_B and D_0 are the corresponding single-parameter and default conditions. Ratios below 1 indicate a combined effect stronger than independent action. Analysis code and outputs accompany this report.')
+
+H('3. Results')
+H('3.1 Data integrity and precision', 2)
+P('All 1,210,000 records passed the ledger, conservation and colony-record checks (0 failures each). Block-wise recombination reproduced every whole-condition estimate exactly (maximum absolute difference 0) and matched all 484 earlier condition summaries exactly. The 484 conditions contained 454 unique parameter settings. The other 30 conditions (75,000 runs) were exact replays of settings that appear in more than one sub-experiment, for example the default condition repeated in each sub-experiment, so the number of distinct simulated settings is 454 (1,135,000 runs).')
+P('For full elimination, between-block heterogeneity exceeded the 5% critical value in 12 of 422 testable conditions and the 1% value in 1, fewer than the 21.1 and 4.2 expected by chance, so there was no evidence of seed-block dependence. For the occurrence of any overt colony, 29 of 289 testable conditions exceeded the 5% value (14.4 expected) and 7 exceeded the 1% value. These were concentrated in conditions where colonies were rare (0.3–4.8% of runs), where the χ² approximation is unreliable, so they are not interpreted as heterogeneity. Estimates had converged: the largest change in any condition\'s full-elimination fraction over the final 20% of seeds was 0.011 (median 0.0015), the largest split-half difference was 0.048, and the largest 95% half-width was ±0.020.')
+H('3.2 Default behaviour', 2)
+P('Under default parameters, 94.5% of shed cells were cleared and every run retained at least one dormant cell (mean 10.38; 95% CI 10.25–10.51). An overt colony formed in 21.7% of runs (20.2–23.4%), at 0.255 colonies per run (0.235–0.275), and 94.7% of colonies arose in the preferred organ. The configurations differed (Table 1). The prostate-like configuration had the largest dormant pool and the highest colonization probability, and its intervals did not overlap those of the lung- or melanoma-like configurations.')
+T(['Configuration (preferred organ)', 'Runs with overt colony (95% CI)', 'Mean dormant cells (95% CI)', 'Colonies in preferred organ'], [
+ ['Prostate-like (bone)', '39.6% (35.2–44.0)', '12.06 (11.72–12.41)', '100%'],
+ ['ER+ breast-like (bone)', '21.0% (17.4–24.8)', '10.02 (9.74–10.31)', '100%'],
+ ['Lung-like (lung)', '13.6% (10.6–16.6)', '9.76 (9.51–10.02)', '75%'],
+ ['Melanoma-like (lung)', '10.0% (7.4–12.8)', '9.41 (9.14–9.69)', '70%'],
+ ['Colorectal-like (liver)', '24.4% (20.8–28.4)', '10.65 (10.35–10.94)', '100%']],
+ caption='Table 1. Default behaviour by configuration (500 runs each; cluster-bootstrap 95% CIs).')
+F('fig01_baseline.png', 'Figure 1. Default behaviour by configuration: fraction of shed cells cleared, dormant cells remaining at month 120, and overt colonies per run by organ.')
+H('3.3 Single-parameter dose–response and switch points', 2)
+P('Perturbations acting after establishment (dormancy maintenance up to 1.0; outgrowth barrier up to +0.5) reduced overt colonization to 0–0.6% of runs but left the dormant pool unchanged at about 10.6 cells, so full elimination stayed at 0%. Circulating clearance reached a 99%-per-month ceiling near ×1.65, where 2.3% of runs fully eliminated. Lowering only preferred-organ permissiveness (×0.3) cut colonization to 0.9% of runs but redirected residual colonies to secondary organs and left 6.24 dormant cells per run. Four parameters could drive full elimination toward 1 on their own. Their estimated switch points are given in Table 2 and Figures 2 and 3.')
+T(['Parameter', 'x₅₀ (95% CI)', 'x₉₀ (95% CI)', 'Interpolated x₅₀ / x₉₀', 'Max |fit − observed|'], [
+ ['Establishment threshold (default 0.65)', '0.799 (0.797–0.800)', '0.854 (0.851–0.857)', '0.795 / 0.862', '0.032'],
+ ['Global organ permissiveness (×)', '0.297 (0.295–0.300)', '0.219 (0.217–0.221)', '0.297 / 0.212', '0.047'],
+ ['Dormant-cell clearance (×)', '25.8 (25.0–26.8)', '78.9 (75.0–83.0)', '24.7 / 84.0', '0.043'],
+ ['Shedding rate (×)', '0.089 (0.085–0.092)', '0.025 (0.024–0.027)', '0.107 / 0.018', '0.077']],
+ caption='Table 2. Switch points for full elimination (pooled, logistic fit; bootstrap 95% CIs reflect Monte Carlo error only).')
+P('The establishment threshold behaved as a sharp switch. By the fit, full elimination went from 10% to 90% as the threshold moved from 0.744 to 0.854, a 15% relative change. The same rise required about a 1.8-fold change in global permissiveness (×0.404 to ×0.219), about a 12-fold change in shedding (×0.31 to ×0.025), and roughly a 9-fold change in dormant-cell clearance. For shedding, the logistic form fitted less well at both extremes (maximum residual 0.077), so the interpolated values are the more faithful description there.')
+F('figA_switch_points.png', 'Figure 2. Full-elimination fraction versus parameter value with logistic fits. Red: x₅₀; orange: x₉₀; shaded bands show bootstrap 95% CIs.')
+F('fig02_dose_response.png', 'Figure 3. Dose–response for all eight parameters: overt colonies and dormant pool relative to default, and the full-elimination fraction.')
+H('3.4 Configuration dependence', 2)
+P('Switch points differed between configurations in a way that tracked preferred-organ permissiveness (Figure 4). For the establishment threshold, x₉₀ was 0.872 (0.865–0.878) for the prostate-like configuration, 0.857 (0.851–0.863) for colorectal-like, 0.848 (0.843–0.853) for ER+ breast-like, 0.845 (0.840–0.850) for melanoma-like and 0.842 (0.837–0.847) for lung-like. For global permissiveness, x₉₀ ranged from ×0.176 (0.171–0.182; prostate-like) to ×0.303 (0.298–0.308; melanoma-like). For dormant-cell clearance and shedding, the configuration intervals overlapped (e.g., clearance x₉₀ 73–88-fold with wide intervals), so the data do not resolve configuration differences for those parameters.')
+F('figB_switch_points_by_configuration.png', 'Figure 4. Configuration-specific x₅₀ (circles) and x₉₀ (squares) with bootstrap 95% CIs.')
+H('3.5 Combinations and interactions', 2)
+P('Of 112 two-parameter settings, 9 met both prespecified targets (overt colonization ≤1% of runs and any dormant cell ≤10% of runs), and all 9 included an establishment threshold of 0.85. The best pairs reached 98.9% full elimination (threshold 0.85 with dormant-cell clearance ×20, or with global permissiveness ×0.4). The best pair without the threshold reached 84.5%. Of 112 three-parameter settings, 26 met both targets, 6 of them without the threshold (best 96.9%). Sets of four to six parameters at moderate strength did not meet the target (best 85.6%). All eight parameters together reached 94.3% at moderate and 100% at strong settings.')
+P('Across 98 pairs with matching single-parameter conditions, the median interaction ratio for the dormant pool was 0.997. 74 pairs fell within ±10% of independent action and 86 within ±20%. Because the runs are paired and numerous, the bootstrap intervals excluded 1 for most pairs (47 below, 35 above, 16 consistent with 1), so small departures were detectable but mostly modest in size. Three classes of large departure stood out. Global plus preferred-organ permissiveness was strongly sub-multiplicative (ratios 0.21–0.22, CI 0.19–0.23 at global ×0.4; 0.73 at global ×0.6), consistent with the first perturbation removing the alternative organs the second would redirect cells toward. The establishment threshold at 0.85 combined with global permissiveness was also sub-multiplicative (0.37, CI 0.23–0.52 at ×0.4; 0.54, 0.45–0.64 at ×0.6). The establishment threshold combined with circulating clearance was super-multiplicative (1.38, CI 1.24–1.53, and 1.42, CI 1.22–1.65, at threshold 0.85), consistent with both parameters removing the same cells.')
+F('figD_interactions.png', 'Figure 5. Interaction ratios (observed/independent-action expectation, dormant pool) with bootstrap 95% CIs for 98 parameter pairs. Blue: CI below 1; red: CI above 1; grey: CI includes 1; band: ±10%.')
+F('fig05_combinations.png', 'Figure 6. (A) Best full-elimination fraction for each two-parameter pair; (B) best outcome by number of parameters perturbed (sets of four to six tested only at moderate strength).')
+H('3.6 Onset dependence', 2)
+P('Delaying the onset of a perturbation reduced its effect in every series (Table 3, Figure 7). For the moderate six-parameter bundle, full elimination fell from 87.4% (onset month 1) to 69.6% (month 36), 40.4% (month 60), 9.2% (month 84) and 0.0% (month 108), with a half-time of 57 months. Single perturbations acting upstream of dormancy halved within 15–17 months. Dormant-cell clearance (×20) was largely insensitive to onset: full elimination stayed between 41% and 42% for onsets up to month 36, and halved only at month 97.')
+T(['Perturbation', 'Full elimination at onset month 1', 'Half-time, months (95% CI)'], [
+ ['Moderate six-parameter bundle', '87.4%', '57.3 (55.9–58.7)'],
+ ['Establishment threshold 0.80', '54.4%', '15.6 (14.6–16.6)'],
+ ['Global organ permissiveness ×0.4', '11.8%', '17.3 (14.5–20.0)'],
+ ['Shedding ×0.25', '11.9%', '15.0 (12.0–17.7)'],
+ ['Dormant-cell clearance ×20', '42.0%', '97.3 (96.4–98.1)']],
+ caption='Table 3. Onset dependence: month at which full elimination falls to half its month-1 value.')
+F('figC_timing.png', 'Figure 7. Full-elimination fraction versus onset month of each perturbation.')
+
+H('4. Discussion')
+P('The reanalysis confirms the earlier point estimates exactly and shows they are precise with respect to Monte Carlo error. Its contribution is quantitative sharpening rather than new qualitative findings. Four results are worth highlighting.')
+P('First, the dominant lever in this model is the establishment step. The threshold moves full elimination from 10% to 90% over a 15% relative change in its value, and it was the only parameter that let two-parameter combinations meet the joint target. Global permissiveness also shows a fairly sharp transition (about 1.8-fold). This steepness follows directly from the model\'s construction: a deterministic weighted score compared against a threshold applies to every arriving cell. It should be read as a property of thresholded admission in this model, not as an estimate for any biological process.')
+P('Second, suppressing overt colonies and clearing the dormant pool are separable outcomes. Perturbations acting after establishment removed nearly all colonies while leaving the dormant pool intact. Full elimination required acting at or before establishment, or removing dormant cells directly and substantially (x₉₀ about 79-fold).')
+P('Third, onset dependence is strongly asymmetric. Upstream perturbations lose half their effect within about 15–17 months of delayed onset, because cells established before onset persist. Clearance that acts directly on dormant cells is nearly onset-independent for most of the horizon. This is a structural consequence of a persistent dormant compartment and would be expected in any model sharing that structure.')
+P('Fourth, the earlier statement that most pairs combine "about multiplicatively" holds in magnitude (median 0.997; 74 of 98 within ±10%), but with this many paired runs, small departures are statistically detectable for most pairs. Only a few pairs depart substantially, and each has a mechanistic explanation within the model: shared targets produce super-multiplicative effects, and removal of the alternative organs produces sub-multiplicative ones.')
+P('Configuration dependence, where resolvable, followed preferred-organ permissiveness: the configuration with the most permissive preferred site needed the strictest settings. Because permissiveness also enters the arrest and fitness calculations, organotropism in this model is partly imposed by construction.')
+
+H('5. Limitations')
+B('All results describe a simulated system. Rates were set by hand to reproduce a qualitative pattern (high clearance, a small persistent dormant pool, rare preferred-organ colonization) and were not fitted to measurements. A different calibration would change the effect sizes and switch points.')
+B('The eight perturbed parameters are abstract model quantities. They do not correspond to specific biological agents or procedures, and the results carry no clinical meaning.')
+B('Bootstrap intervals quantify Monte Carlo uncertainty only, conditional on the model. They do not capture structural or parameter uncertainty, which is likely much larger.')
+B('Logistic switch-point fits had maximum residuals of 0.03–0.10. For shedding in particular, the interpolated values are more faithful than the fitted ones.')
+B('Interaction ratios were computed on the dormant pool only, and only where matching single-parameter conditions existed (98 of 112 two-parameter settings). Sets of four to six parameters were tested only at moderate strength.')
+B('Full elimination ignores cells still in transit during the final months (about 2.2 per default run).')
+B('The χ² block-homogeneity test is unreliable when events are rare. The excess of flagged conditions for overt colonization is attributed to this but was not tested with an exact method.')
+B('Not modeled: secondary seeding from established colonies, distinct immune compartments, organ-specific growth kinetics, or spatial structure.')
+
+H('6. Conclusion')
+P('A reanalysis of 1.21 million simulated histories confirmed every earlier estimate and attached uncertainty to the main findings. In this model, the burden of overt colonization and of residual dormant cells was governed chiefly by establishment in the distant organ and by organ permissiveness. Suppressing colonies and clearing the dormant pool behaved as separate outcomes. Perturbations upstream of dormancy lost half their effect within roughly 15–17 months of delayed onset, against 57 months for a combined perturbation and 97 months for direct clearance of dormant cells. These are properties of the model under its assumed structure and calibration, offered as hypotheses for further modeling.')
+
+H('Data and code availability')
+P('Per-run records: /workspace/oroboro-prevention-sim/data/raw_*.csv (1,210,000 rows). Reanalysis code and outputs: /workspace/study-writeup/v2/pipeline/ (refine.py, refine_addon.py, make_figs_v2.py; out/refinement_log.json, refinement_addon.json, switch_point_fits.json, interactions_bootstrap.csv, condition_estimates_recombined.csv). No external references are cited; background statements are general.', size=9.5)
+d.save('InSilico_Metastasis_Parameter_Sweep_Refined.docx'); print('ok')
