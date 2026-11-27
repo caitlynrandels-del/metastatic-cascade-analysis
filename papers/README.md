@@ -2,14 +2,14 @@
 
 **Speculative modeling only. No clinical claims.**
 
-PDF and Word copies of the successive Oroboro metastatic-cascade write-ups, plus figures and build scripts.
+Successive Oroboro metastatic-cascade write-ups (v1–v5). The original PDF and Word files could not be stored in this repository as binaries through the connected GitHub interface; they remain on the project computer and were delivered in chat.
 
-| Version | PDF |
+| Version | Title |
 |---|---|
-| v1 | [Dissemination_Dormancy_Colonization_InSilico_Study.pdf](v1/Dissemination_Dormancy_Colonization_InSilico_Study.pdf) |
-| v2 | [InSilico_Metastasis_Parameter_Sweep_Refined.pdf](v2/InSilico_Metastasis_Parameter_Sweep_Refined.pdf) |
-| v3 | [Establishment_Stage_Control_and_Onset_Dependence.pdf](v3/Establishment_Stage_Control_and_Onset_Dependence.pdf) |
-| v4 | [Calibrated_Cascade_Model_of_Metastatic_Dissemination_Dormancy_Colonization.pdf](v4/Calibrated_Cascade_Model_of_Metastatic_Dissemination_Dormancy_Colonization.pdf) |
-| v5 | [Sponge_and_Layer_Effects_in_a_Calibrated_Metastatic_Cascade_Model_at_Equal_Precision_v5.pdf](v5/Sponge_and_Layer_Effects_in_a_Calibrated_Metastatic_Cascade_Model_at_Equal_Precision_v5.pdf) |
+| v1 | Dissemination, Dormancy, Colonization: In-Silico Study |
+| v2 | In-Silico Metastasis Parameter Sweep (Refined) |
+| v3 | Establishment-Stage Control and Onset Dependence |
+| v4 | Calibrated Cascade Model of Metastatic Dissemination, Dormancy and Colonization |
+| v5 | Sponge and Layer Effects in a Calibrated Metastatic Cascade Model at Equal Precision |
 
-Full v3/v4 simulation code and results are staged locally in `/workspace/oroboro-multidb-sim-v3` and `/workspace/oroboro-multidb-sim-v4` (not part of this papers folder). Related architecture adaptation: [epilepsy-sim](https://github.com/caitlynrandels-del/epilepsy-sim).
+Full v3/v4 simulation code and results are also on the project computer (`oroboro-multidb-sim-v3` and `oroboro-multidb-sim-v4`) and have not been published as new GitHub repositories yet, for the same reason (the connected interface cannot take a full git push of binary results). Related architecture adaptation: [epilepsy-sim](https://github.com/caitlynrandels-del/epilepsy-sim).

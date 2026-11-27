@@ -27,7 +27,7 @@ Key computational findings (internal to the model):
 
 ## Papers
 
-PDF and Word copies of the successive write-ups are in [`papers/`](papers/):
+Successive write-ups of this work:
 
 - v1: *Dissemination, Dormancy and Colonization* (in-silico study)
 - v2: refined parameter-sweep paper
@@ -35,13 +35,13 @@ PDF and Word copies of the successive write-ups are in [`papers/`](papers/):
 - v4: calibrated cascade model (multi-database run, sponge and layers)
 - v5: sponge and layer effects at equal precision (v4 run)
 
-A short [v4 run summary](v4_Run_Summary.md) is also in the repository root.
+The original PDF and Word files could not be stored here as binaries through the connected GitHub interface; they remain on the project computer and were delivered in chat. A short [v4 run summary](v4_Run_Summary.md) is in the repository root, and an index is in [`papers/README.md`](papers/README.md).
 
 ## Related Documents
 
 - Operational update sequence protocol
 - Earlier establishment-stage and determinants analyses
-- Associated PDF manuscript (see `papers/`)
+- Associated PDF manuscripts (on the project computer; see note under Papers)
 
 ## Related Work
 
