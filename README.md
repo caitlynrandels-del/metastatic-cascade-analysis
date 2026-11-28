@@ -38,7 +38,7 @@ Successive write-ups of this work:
 - v4: calibrated cascade model (multi-database run, sponge and layers)
 - v5: sponge and layer effects at equal precision (v4 run)
 
-Page-image views are now in the repo: [v1](papers/v1/view.html) and [v2](papers/v2/view.html), with SVG pages, plain-text extractions and build scripts. The PDF and Word binaries for v1–v5 remain on the project computer, because the connected GitHub interface stores text only. v3–v5 are not yet published here. A short [v4 run summary](v4_Run_Summary.md) is in the repository root, and an index is in [`papers/README.md`](papers/README.md).
+Page-image views are now in the repo: [v1](papers/v1/view.html), [v2](papers/v2/view.html), [v3](papers/v3/view.html), [v4](papers/v4/view.html) and [v5](papers/v5/view.html), with SVG pages (and, for v1–v2, plain-text extractions and build scripts). The PDF and Word binaries for v1–v5 remain on the project computer, because the connected GitHub interface stores text only. A short [v4 run summary](v4_Run_Summary.md) is in the repository root, and an index is in [`papers/README.md`](papers/README.md).
 
 ## Related Documents
 
